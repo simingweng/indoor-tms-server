@@ -46,7 +46,7 @@ app.get('/api/buildings/:bid', authentication.userauth, building.get);
 //add a building
 app.post('/api/buildings', authentication.userauth, building.add);
 //remove a building
-app.remove('/api/buildings/:bid', authentication.userauth, building.remove);
+app.delete('/api/buildings/:bid', authentication.userauth, building.remove);
 //update a building
 app.put('/api/buildings/:bid', authentication.userauth, building.modify);
 
