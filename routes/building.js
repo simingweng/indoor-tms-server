@@ -7,7 +7,7 @@ var Building = require('../models/building');
 exports.list = function (req, res) {
     Building.find({userid: req.userid}, function (err, buildings) {
         if (err) {
-            sendDatabaseError(res);
+            res.send(500, err);
         } else {
             res.json(buildings);
         }
@@ -17,7 +17,7 @@ exports.list = function (req, res) {
 exports.get = function (req, res) {
     Building.findById(req.params.bid, function (err, building) {
         if (err) {
-            sendDatabaseError(res);
+            res.send(500, err);
         } else {
             res.json(building);
         }
@@ -34,7 +34,7 @@ exports.add = function (req, res) {
     building.userid = req.userid;
     building.save(function (err, newbuilding) {
         if (err) {
-            sendDatabaseError(res);
+            res.send(500, err);
         } else {
             res.json(newbuilding);
         }
@@ -48,7 +48,3 @@ exports.remove = function (req, res) {
 exports.modify = function (req, res) {
 
 };
-
-function sendDatabaseError(res) {
-    res.send(500, {error: 'error occurred when accessing database'});
-}

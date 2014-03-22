@@ -14,7 +14,7 @@ exports.obtain = function (req, res) {
     }
     User.find({'username': username}, function (err, users) {
         if (err) {
-            res.send(500, {error: 'failed to access database'});
+            res.send(500, err);
         } else if (!users || users.length == 0) {
             res.send(500, {error: 'user does not exist'});
         } else {

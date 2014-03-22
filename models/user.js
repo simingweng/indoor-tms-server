@@ -4,10 +4,10 @@
 var mongoose = require('mongoose');
 
 var User_Schema = new mongoose.Schema({
-    username: String,
-    password: String,
-    salt: String,
-    token: String
+    username: {type: String, required: true},
+    password: {type: String, required: true},
+    salt: {type: String, required: true},
+    token: {type: String, required: true}
 });
 mongoose.model('User', User_Schema);
 

@@ -9,7 +9,7 @@ module.exports = function (req, res) {
     if (!req.body.username || !req.body.password) throw new Error('invalid arguments');
     User.find({'username': req.body.username}, function (err, users) {
         if (err) {
-            res.send(500, {error: 'failed to access database'});
+            res.send(500, err);
         } else if (users.length != 0) {
             res.send(500, {error: 'user has existed'});
         } else {
@@ -32,7 +32,7 @@ module.exports = function (req, res) {
                                     newuser.token = hash;
                                     newuser.save(function (err) {
                                         if (err) {
-                                            res.send(500, {error: 'failed to save user to database'})
+                                            res.send(500, err);
                                         } else {
                                             res.json({'token': newuser.token});
                                         }
