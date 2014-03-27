@@ -7,6 +7,8 @@ var routes = require('./routes');
 var building = require('./routes/building');
 var token = require('./routes/token');
 var signup = require('./routes/signup');
+var floor = require('./routes/floor');
+var upload = require('./routes/upload');
 var authentication = require('./lib/middleware/authentication');
 var https = require('https');
 var path = require('path');
@@ -50,6 +52,14 @@ app.post('/api/buildings', authentication.userauth, building.add);
 app.delete('/api/buildings/:bid', authentication.userauth, building.remove);
 //update a building
 app.put('/api/buildings/:bid', authentication.userauth, building.modify);
+//add a new floor to a building
+app.post('/api/buildings:bid/floors', authentication.userauth, floor.add);
+//delete a floor from a building
+app.delete('/api/buildings:bid/floors:fid', authentication.userauth, floor.remove);
+//add a new floor to a building
+app.put('/api/buildings:bid/floors:fid', authentication.userauth, floor.modify);
+//upload an image floor plan
+app.post('/api/upload', upload.upload);
 
 //establish the database connection
 var mongoose = require('mongoose');
