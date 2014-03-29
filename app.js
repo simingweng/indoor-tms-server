@@ -45,19 +45,19 @@ app.post('/api/user_token', token.obtain);
 //get all the buildings
 app.get('/api/buildings', authentication.userauth, building.list);
 //get a single building
-app.get('/api/buildings/:bid', authentication.userauth, building.get);
+app.get('/api/buildings/:bid', building.get);
 //add a building
 app.post('/api/buildings', authentication.userauth, building.add);
 //remove a building
-app.delete('/api/buildings/:bid', authentication.userauth, building.remove);
+app.delete('/api/buildings/:bid', building.remove);
 //update a building
-app.put('/api/buildings/:bid', authentication.userauth, building.modify);
+app.put('/api/buildings/:bid', building.modify);
 //add a new floor to a building
-app.post('/api/buildings:bid/floors', authentication.userauth, floor.add);
+app.post('/api/buildings/:bid/floors', floor.add);
 //delete a floor from a building
-app.delete('/api/buildings:bid/floors:fid', authentication.userauth, floor.remove);
+app.delete('/api/buildings/:bid/floors/:fid', floor.remove);
 //add a new floor to a building
-app.put('/api/buildings:bid/floors:fid', authentication.userauth, floor.modify);
+app.put('/api/buildings/:bid/floors/:fid', floor.modify);
 //upload an image floor plan
 app.post('/api/upload', upload.upload);
 

@@ -8,7 +8,7 @@ var floor_schema = new mongoose.Schema({
     name: {type: String, required: true},
     level: Number,
     created: Date,
-    imageid: mongoose.Schema.Types.ObjectId,
+    image: String,
     gcps: [GCP.schema]
 });
 
