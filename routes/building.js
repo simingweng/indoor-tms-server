@@ -22,7 +22,6 @@ exports.get = function (req, res) {
             res.json(building);
         }
     });
-    res.json({});
 };
 
 exports.add = function (req, res) {

@@ -34,13 +34,11 @@ exports.add = function (req, res) {
                             //geo reference and tile the floor plan
                             exports.georeference(buildingid, floor, function (err, tiff) {
                                 if (err) {
-                                    res.send(500, err);
+                                    console.log(err);
                                 } else {
                                     exports.tile(buildingid, floor._id, tiff, function (err) {
                                         if (err) {
-                                            res.send(500, err);
-                                        } else {
-                                            res.send(200);
+                                            console.log(err);
                                         }
                                     });
                                 }
