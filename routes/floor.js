@@ -6,6 +6,7 @@ var Building = require('../models/building');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var child_process = require('child_process');
+var rimraf = require('rimraf');
 
 var ngnixroot = '/var/indoortmsdata';
 
@@ -63,6 +64,11 @@ exports.remove = function (req, res) {
                     res.send(500, err);
                 } else {
                     res.json(savedbuilding);
+                    rimraf(path.join(ngnixroot, req.params.bid, req.params.fid), function (err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
                 }
             });
         }

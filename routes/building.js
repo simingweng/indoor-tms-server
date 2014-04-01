@@ -50,7 +50,7 @@ exports.remove = function (req, res) {
             res.send(500, err);
         } else {
             res.json(removedbuilding);
-            rimraf(path.join(ngnixroot, removedbuilding._id.toString()), function (err) {
+            rimraf(path.join(ngnixroot, req.params.bid), function (err) {
                 if (err) {
                     console.log(err);
                 }
