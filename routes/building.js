@@ -3,6 +3,10 @@
  */
 
 var Building = require('../models/building');
+var rimraf = require('rimraf');
+var path = require('path');
+
+var ngnixroot = '/var/indoortmsdata';
 
 exports.list = function (req, res) {
     Building.find({userid: req.userid}, function (err, buildings) {
@@ -41,9 +45,35 @@ exports.add = function (req, res) {
 };
 
 exports.remove = function (req, res) {
-
+    Building.findByIdAndRemove(req.params.bid, function (err, removedbuilding) {
+        if (err) {
+            res.send(500, err);
+        } else {
+            res.json(removedbuilding);
+            rimraf(path.join(ngnixroot, removedbuilding._id.toString()), function (err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        }
+    });
 };
 
 exports.modify = function (req, res) {
-
+    Building.findById(req.params.bid, function (err, building) {
+        if (err) {
+            res.send(500, err);
+        } else {
+            building.name = req.body.bname;
+            building.formatted_address = req.body.formatted_address;
+            building.iconurl = req.body.iconurl;
+            building.save(function (err, newbuilding) {
+                if (err) {
+                    res.send(500, err);
+                } else {
+                    res.json(newbuilding);
+                }
+            });
+        }
+    });
 };

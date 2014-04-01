@@ -2,7 +2,6 @@
  * Created by simingweng on 25/3/14.
  */
 var fs = require('fs');
-var Floor = require('../models/floor');
 var Building = require('../models/building');
 var path = require('path');
 var mkdirp = require('mkdirp');
@@ -54,7 +53,20 @@ exports.add = function (req, res) {
 };
 
 exports.remove = function (req, res) {
-
+    Building.findById(req.params.bid, function (err, building) {
+        if (err) {
+            res.send(500, err);
+        } else {
+            building.floors.id(req.params.fid).remove();
+            building.save(function (err, savedbuilding) {
+                if (err) {
+                    res.send(500, err);
+                } else {
+                    res.json(savedbuilding);
+                }
+            });
+        }
+    });
 };
 
 exports.modify = function (req, res) {
