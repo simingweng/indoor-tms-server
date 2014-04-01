@@ -8,7 +8,7 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var child_process = require('child_process');
 
-var ngnixroot = '/usr/local/nginx/html';
+var ngnixroot = '/var/indoortmsdata';
 
 exports.add = function (req, res) {
     var imagetTempPath = req.body.image;
@@ -38,7 +38,7 @@ exports.add = function (req, res) {
                                 if (err) {
                                     console.log(err);
                                 } else {
-                                    exports.tile(buildingid, floor._id, tiff, function (err) {
+                                    exports.tile(buildingid, floor._id.toString(), tiff, function (err) {
                                         if (err) {
                                             console.log(err);
                                         }
@@ -62,9 +62,6 @@ exports.modify = function (req, res) {
 };
 
 exports.georeference = function (buildingid, floor, callback) {
-    /*
-     gdal_translate -of GTiff -a_srs EPSG:4326 -gcp 259,568 103.84452123194933 1.286879711908067 -gcp 2825 173 103.84505398571491 1.2865803858247906 -gcp 2825 2151 103.84470161050558 1.2861935746864295 [src_dataset] [dst_dataset]
-     */
     var command = ['gdal_translate', '-of', 'GTiff', '-a_srs', 'EPSG:4326'];
     for (var i = 0; i < floor.gcps.length; i++) {
         command.push('-gcp', floor.gcps[i].x.toString(), floor.gcps[i].y.toString(), floor.gcps[i].lng.toString(), floor.gcps[i].lat.toString());
