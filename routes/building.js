@@ -30,9 +30,8 @@ exports.get = function (req, res) {
 
 exports.add = function (req, res) {
     var building = new Building();
-    building.name = req.body.bname;
+    building.name = req.body.name;
     building.formatted_address = req.body.formatted_address;
-    building.iconurl = req.body.iconurl;
     building.created = new Date();
     building.userid = req.userid;
     building.save(function (err, newbuilding) {
@@ -66,7 +65,6 @@ exports.modify = function (req, res) {
         } else {
             building.name = req.body.bname;
             building.formatted_address = req.body.formatted_address;
-            building.iconurl = req.body.iconurl;
             building.save(function (err, newbuilding) {
                 if (err) {
                     res.send(500, err);

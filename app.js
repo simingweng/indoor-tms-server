@@ -11,6 +11,7 @@ var floor = require('./routes/floor');
 var upload = require('./routes/upload');
 var authentication = require('./lib/middleware/authentication');
 var https = require('https');
+var http = require('http');
 var path = require('path');
 var fs = require('fs');
 
@@ -78,6 +79,6 @@ process.on('SIGINT', function () {
 });
 
 //start up the server
-https.createServer(server_opt, app).listen(app.get('port'), function () {
+http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));
 });

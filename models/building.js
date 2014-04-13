@@ -7,7 +7,6 @@ var Floor = require('./floor');
 var building_schema = new mongoose.Schema({
     name: {type: String, required: true},
     formatted_address: String,
-    iconurl: String,
     reference: String,
     created: Date,
     userid: {type: mongoose.Schema.Types.ObjectId, required: true},

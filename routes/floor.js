@@ -7,6 +7,7 @@ var path = require('path');
 var mkdirp = require('mkdirp');
 var child_process = require('child_process');
 var rimraf = require('rimraf');
+var sizeof = require('image-size');
 
 var ngnixroot = '/var/indoortmsdata';
 
@@ -20,7 +21,7 @@ exports.add = function (req, res) {
             res.send(500, err);
         } else {
             fs.renameSync(imagetTempPath, floorImageLocation);
-            //rewrite the image URL to be saved in the database
+            //rewrite the image property to be saved in the database
             req.body.image = path.basename(imagetTempPath);
             req.body.created = new Date();
             Building.findById(buildingid, function (err, building) {
@@ -80,12 +81,12 @@ exports.modify = function (req, res) {
 };
 
 exports.georeference = function (buildingid, floor, callback) {
+    var imagepath = path.join(ngnixroot, buildingid, floor.image);
+    var imageDimension = sizeof(imagepath);
     var command = ['gdal_translate', '-of', 'GTiff', '-a_srs', 'EPSG:4326'];
     for (var i = 0; i < floor.gcps.length; i++) {
-        command.push('-gcp', floor.gcps[i].x.toString(), floor.gcps[i].y.toString(), floor.gcps[i].lng.toString(), floor.gcps[i].lat.toString());
+        command.push('-gcp', Math.round(floor.gcps[i].x * imageDimension.width).toString(), Math.round(floor.gcps[i].y * imageDimension.height).toString(), floor.gcps[i].lng.toString(), floor.gcps[i].lat.toString());
     }
-    //var imagepath = path.join(__dirname, '..', 'public', buildingid, floor.image);
-    var imagepath = path.join(ngnixroot, buildingid, floor.image);
     command.push(imagepath);
     command.push(imagepath + '.tiff');
     child_process.exec(command.join(' '), function (error, stdout, stderr) {
@@ -102,7 +103,6 @@ exports.georeference = function (buildingid, floor, callback) {
 
 exports.tile = function (buildingid, floorid, tiff, callback) {
     var command = ['gdal2tiles.py', '-s', 'EPSG:4326', '-z 16-20', tiff];
-    //var destination = path.join(__dirname, '..', 'public', buildingid, floorid);
     var destination = path.join(ngnixroot, buildingid, floorid);
     command.push(destination);
     child_process.exec(command.join(' '), function (error, stdout, stderr) {
