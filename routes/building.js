@@ -29,9 +29,7 @@ exports.get = function (req, res) {
 };
 
 exports.add = function (req, res) {
-    var building = new Building();
-    building.name = req.body.name;
-    building.formatted_address = req.body.formatted_address;
+    var building = new Building(req.body);
     building.created = new Date();
     building.userid = req.userid;
     building.save(function (err, newbuilding) {
