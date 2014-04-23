@@ -8,6 +8,7 @@ var mkdirp = require('mkdirp');
 var child_process = require('child_process');
 var rimraf = require('rimraf');
 var sizeof = require('image-size');
+var Floor = require('../models/floor');
 
 var ngnixroot = '/var/indoortmsdata';
 
@@ -28,12 +29,13 @@ exports.add = function (req, res) {
                 if (err) {
                     res.send(500, err);
                 } else {
-                    var floor = building.floors.create(req.body);
+                    var floor = new Floor(req.body);
+                    building.floors.push(floor);
                     building.save(function (err, newBuilding) {
                         if (err) {
                             res.send(500, err);
                         } else {
-                            res.json(newBuilding);
+                            res.json(floor);
                             //geo reference and tile the floor plan
                             exports.georeference(buildingid, floor, function (err, tiff) {
                                 if (err) {
