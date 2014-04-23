@@ -6,11 +6,12 @@ var formidable = require('formidable');
 exports.upload = function (req, res) {
     var form = new formidable.IncomingForm();
     form.keepExtensions = true;
+    form.maxFieldsSize = 4 * 1024 * 1024;
     form.parse(req, function (err, fields, files) {
         if (err) {
             res.send(500, err);
         } else {
-            res.json(files);
+            res.json(files[Object.keys(files)[0]]);
         }
     });
 };
