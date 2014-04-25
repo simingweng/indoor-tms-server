@@ -49,17 +49,19 @@ exports.add = function (req, res) {
                                 } else {
                                     res.json(floor);
                                     //geo reference and tile the floor plan
-                                    exports.georeference(buildingid, floor, function (err, tiff) {
-                                        if (err) {
-                                            console.log(err);
-                                        } else {
-                                            exports.tile(buildingid, floor._id.toString(), tiff, function (err) {
-                                                if (err) {
-                                                    console.log(err);
-                                                }
-                                            });
-                                        }
-                                    });
+                                    if (floor.gcps && floor.gcps.length >= 3) {
+                                        exports.georeference(buildingid, floor, function (err, tiff) {
+                                            if (err) {
+                                                console.log(err);
+                                            } else {
+                                                exports.tile(buildingid, floor._id.toString(), tiff, function (err) {
+                                                    if (err) {
+                                                        console.log(err);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
                                 }
                             });
                         }
