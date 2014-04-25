@@ -9,41 +9,55 @@ var child_process = require('child_process');
 var rimraf = require('rimraf');
 var sizeof = require('image-size');
 var Floor = require('../models/floor');
+var formidable = require('formidable');
 
 var ngnixroot = '/var/indoortmsdata';
 
 exports.add = function (req, res) {
-    var imagetTempPath = req.body.image;
-    var buildingid = req.params.bid;
-    var floorImageLocation = path.join(ngnixroot, buildingid, path.basename(imagetTempPath));
-    //move the file to public web folder
-    mkdirp(path.dirname(floorImageLocation), function (err) {
+    var form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.maxFieldsSize = 4 * 1024 * 1024;
+    form.parse(req, function (err, fields, files) {
         if (err) {
             res.send(500, err);
+        } else if (!fields.floor || !files) {
+            res.send(500, {error: 'incomplete floor information'});
         } else {
-            fs.renameSync(imagetTempPath, floorImageLocation);
-            //rewrite the image property to be saved in the database
-            req.body.image = path.basename(imagetTempPath);
-            req.body.created = new Date();
-            Building.findById(buildingid, function (err, building) {
+            var newFloor = JSON.parse(fields.floor);
+            var newFloorPlan = files[Object.keys(files)[0]];
+            var buildingid = req.params.bid;
+
+            var floorImageLocation = path.join(ngnixroot, buildingid, newFloorPlan.name);
+            //move the file to public web folder
+            mkdirp(path.dirname(floorImageLocation), function (err) {
                 if (err) {
                     res.send(500, err);
                 } else {
-                    var floor = new Floor(req.body);
-                    building.floors.push(floor);
-                    building.save(function (err, newBuilding) {
+                    fs.renameSync(newFloorPlan.path, floorImageLocation);
+                    //rewrite the image property to be saved in the database
+                    newFloor.image = newFloorPlan.name;
+                    newFloor.created = new Date();
+                    Building.findById(buildingid, function (err, building) {
                         if (err) {
                             res.send(500, err);
                         } else {
-                            res.json(floor);
-                            //geo reference and tile the floor plan
-                            exports.georeference(buildingid, floor, function (err, tiff) {
+                            var floor = new Floor(newFloor);
+                            building.floors.push(floor);
+                            building.save(function (err, newBuilding) {
                                 if (err) {
-                                    console.log(err);
+                                    res.send(500, err);
                                 } else {
-                                    exports.tile(buildingid, floor._id.toString(), tiff, function (err) {
+                                    res.json(floor);
+                                    //geo reference and tile the floor plan
+                                    exports.georeference(buildingid, floor, function (err, tiff) {
                                         if (err) {
                                             console.log(err);
+                                        } else {
+                                            exports.tile(buildingid, floor._id.toString(), tiff, function (err) {
+                                                if (err) {
+                                                    console.log(err);
+                                                }
+                                            });
                                         }
                                     });
                                 }
@@ -55,6 +69,7 @@ exports.add = function (req, res) {
         }
     });
 };
+
 
 exports.remove = function (req, res) {
     Building.findById(req.params.bid, function (err, building) {

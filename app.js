@@ -8,7 +8,6 @@ var building = require('./routes/building');
 var token = require('./routes/token');
 var signup = require('./routes/signup');
 var floor = require('./routes/floor');
-var upload = require('./routes/upload');
 var authentication = require('./lib/middleware/authentication');
 var https = require('https');
 var http = require('http');
@@ -59,8 +58,6 @@ app.post('/api/buildings/:bid/floors', floor.add);
 app.delete('/api/buildings/:bid/floors/:fid', floor.remove);
 //add a new floor to a building
 app.put('/api/buildings/:bid/floors/:fid', floor.modify);
-//upload an image floor plan
-app.post('/api/upload', upload.upload);
 
 //establish the database connection
 var mongoose = require('mongoose');
