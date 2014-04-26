@@ -27,7 +27,7 @@ exports.add = function (req, res) {
             var newFloorPlan = files[Object.keys(files)[0]];
             var buildingid = req.params.bid;
 
-            var floorImageLocation = path.join(ngnixroot, buildingid, newFloorPlan.name);
+            var floorImageLocation = path.join(ngnixroot, buildingid, path.basename(newFloorPlan.path));
             //move the file to public web folder
             mkdirp(path.dirname(floorImageLocation), function (err) {
                 if (err) {
@@ -35,7 +35,7 @@ exports.add = function (req, res) {
                 } else {
                     fs.renameSync(newFloorPlan.path, floorImageLocation);
                     //rewrite the image property to be saved in the database
-                    newFloor.image = newFloorPlan.name;
+                    newFloor.image = path.basename(newFloorPlan.path);
                     newFloor.created = new Date();
                     Building.findById(buildingid, function (err, building) {
                         if (err) {
@@ -78,12 +78,23 @@ exports.remove = function (req, res) {
         if (err) {
             res.send(500, err);
         } else {
-            building.floors.id(req.params.fid).remove();
+            var floor = building.floors.id(req.params.fid);
+            floor.remove();
             building.save(function (err, savedbuilding) {
                 if (err) {
                     res.send(500, err);
                 } else {
-                    res.json(savedbuilding);
+                    res.json(floor);
+                    fs.unlink(path.join(ngnixroot, req.params.bid, floor.image), function (err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
+                    fs.unlink(path.join(ngnixroot, req.params.bid, floor.image + '.tiff'), function (err) {
+                        if (err) {
+                            console.log(err);
+                        }
+                    });
                     rimraf(path.join(ngnixroot, req.params.bid, req.params.fid), function (err) {
                         if (err) {
                             console.log(err);
